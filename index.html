@@ -647,7 +647,14 @@ function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 // ─────────────────────────────────────────────
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'mm', format: [80, 200], orientation: 'portrait' });
+  
+  // Calculate dynamic height based on content
+  const baseHeight = 90; // header + metadata
+  const itemHeight = 4.2 * invoiceItems.length; // each item takes ~4.2mm
+  const footerHeight = 30; // footer + signature line
+  const dynamicHeight = baseHeight + itemHeight + footerHeight;
+  
+  const doc = new jsPDF({ unit: 'mm', format: [80, dynamicHeight], orientation: 'portrait' });
 
   const bizName  = v('biz-name');
   const bizAddr  = v('biz-addr');
@@ -758,7 +765,7 @@ function downloadPDF() {
 
 // ─────────────────────────────────────────────
 // INIT
-// ─────────────────────────────────────────────
+// ───���─────────────────────────────────────────
 renderInvoiceItems();
 renderCatalogue();
 </script>
