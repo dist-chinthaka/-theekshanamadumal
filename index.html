@@ -471,7 +471,7 @@ function showPanel(name) {
 
 // ─────────────────────────────────────────────
 // CATALOGUE RENDER
-// ─────────────────────────────────────────────
+// ─────────��───────────────────────────────────
 function renderCatalogue() {
   const tbody = document.getElementById('cat-body');
   tbody.innerHTML = '';
@@ -648,13 +648,13 @@ function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
   
-  // Calculate dynamic height based on content
+  // Calculate dynamic height based on content, fixed width at 88mm
   const baseHeight = 90; // header + metadata
   const itemHeight = 4.2 * invoiceItems.length; // each item takes ~4.2mm
   const footerHeight = 30; // footer + signature line
   const dynamicHeight = baseHeight + itemHeight + footerHeight;
   
-  const doc = new jsPDF({ unit: 'mm', format: [80, dynamicHeight], orientation: 'portrait' });
+  const doc = new jsPDF({ unit: 'mm', format: [88, dynamicHeight], orientation: 'portrait' });
 
   const bizName  = v('biz-name');
   const bizAddr  = v('biz-addr');
@@ -665,7 +665,7 @@ function downloadPDF() {
   const billDate = rawDate.replace(/-/g, '/');
   const net = invoiceItems.reduce((s, it) => s + it.qty * it.rate, 0);
 
-  const W = 72; // usable mm
+  const W = 80; // usable mm (88 - 8 for margins)
   let y = 6;
   const LH = 4.2;
 
@@ -673,9 +673,9 @@ function downloadPDF() {
     doc.setFontSize(size || 8);
     doc.setFont('courier', bold ? 'bold' : 'normal');
     if (align === 'center') {
-      doc.text(txt, 40, y, { align: 'center' });
+      doc.text(txt, 44, y, { align: 'center' });
     } else if (align === 'right') {
-      doc.text(txt, 77, y, { align: 'right' });
+      doc.text(txt, 85, y, { align: 'right' });
     } else {
       doc.text(txt, 4, y);
     }
@@ -683,7 +683,7 @@ function downloadPDF() {
   }
 
   function rule(char) {
-    line(char.repeat(46), 7);
+    line(char.repeat(50), 7);
   }
 
   function nl(n) { y += (n || 1) * 2; }
@@ -717,11 +717,11 @@ function downloadPDF() {
   doc.setFontSize(7);
   doc.setFont('courier', 'bold');
   doc.text('#', 4, y);
-  doc.text('DESCRIPTION', 9, y);
-  doc.text('U', 49, y);
-  doc.text('Q', 54, y);
-  doc.text('RATE', 59, y);
-  doc.text('AMT', 70, y, {align:'right'});
+  doc.text('DESCRIPTION', 10, y);
+  doc.text('U', 55, y);
+  doc.text('Q', 62, y);
+  doc.text('RATE', 68, y);
+  doc.text('AMT', 84, y, {align:'right'});
   y += LH;
   rule('*');
 
@@ -732,16 +732,16 @@ function downloadPDF() {
     const descTrunc = it.desc.length > 20 ? it.desc.substring(0, 20) : it.desc;
     doc.setFontSize(7);
     doc.text(String(i+1), 4, y);
-    doc.text(descTrunc, 9, y);
-    doc.text(it.unit.substring(0,4), 49, y);
-    doc.text(String(it.qty), 57, y, {align:'right'});
-    doc.text(it.rate.toFixed(2), 66, y, {align:'right'});
-    doc.text(amt, 76, y, {align:'right'});
+    doc.text(descTrunc, 10, y);
+    doc.text(it.unit.substring(0,4), 55, y);
+    doc.text(String(it.qty), 65, y, {align:'right'});
+    doc.text(it.rate.toFixed(2), 74, y, {align:'right'});
+    doc.text(amt, 84, y, {align:'right'});
     y += LH;
 
     // second line if description is long
     if (it.desc.length > 20) {
-      doc.text(it.desc.substring(20, 40), 9, y);
+      doc.text(it.desc.substring(20, 40), 10, y);
       y += LH;
     }
   });
@@ -750,7 +750,7 @@ function downloadPDF() {
   doc.setFont('courier', 'bold');
   doc.setFontSize(8.5);
   doc.text('NET (Rs.)', 4, y);
-  doc.text(net.toFixed(2), 76, y, {align:'right'});
+  doc.text(net.toFixed(2), 84, y, {align:'right'});
   y += LH * 1.4;
   doc.setFont('courier', 'normal');
   doc.setFontSize(7);
@@ -765,7 +765,7 @@ function downloadPDF() {
 
 // ─────────────────────────────────────────────
 // INIT
-// ───���─────────────────────────────────────────
+// ─────────────────────────────────────────────
 renderInvoiceItems();
 renderCatalogue();
 </script>
